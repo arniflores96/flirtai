@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlirtAI — Mensajes para apps de citas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.16);
+    --accent: #e84393;
+    --accent2: #7b5cff;
+    --text: #f0eeff;
+    --muted: #8a8799;
+    --success: #2dd4a4;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 4rem;
+  }
+
+  header {
+    text-align: center;
+    padding: 3rem 1.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 500px; height: 300px;
+    background: radial-gradient(ellipse, rgba(232,67,147,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 8vw, 3.2rem);
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #e84393 0%, #7b5cff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .tagline {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 6px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+  }
+
+  .container {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 0 1.2rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.3rem 1.4rem;
+    margin-bottom: 1rem;
+    transition: border-color .2s;
+  }
+
+  .card:focus-within { border-color: var(--border-hover); }
+
+  .card-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .card-label span {
+    display: inline-flex;
+    width: 22px; height: 22px;
+    background: var(--surface2);
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  textarea, input[type="text"], select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 13px;
+    outline: none;
+    transition: border-color .2s;
+    resize: vertical;
+  }
+
+  textarea:focus, input[type="text"]:focus, select:focus {
+    border-color: var(--accent);
+  }
+
+  textarea::placeholder, input::placeholder { color: var(--muted); }
+
+  select option { background: #1e1e24; }
+
+  .upload-zone {
+    border: 1.5px dashed rgba(232,67,147,0.3);
+    border-radius: var(--radius-sm);
+    padding: 1.4rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    background: rgba(232,67,147,0.03);
+  }
+
+  .upload-zone:hover {
+    border-color: var(--accent);
+    background: rgba(232,67,147,0.07);
+  }
+
+  .upload-zone input { display: none; }
+
+  .upload-icon {
+    width: 40px; height: 40px;
+    background: rgba(232,67,147,0.12);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    font-size: 18px;
+  }
+
+  .upload-text { font-size: 13px; color: var(--muted); }
+  .upload-text strong { color: var(--accent); font-weight: 500; }
+
+  .preview-wrap {
+    display: none;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .preview-wrap img {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+  }
+
+  .preview-wrap .preview-info { font-size: 13px; color: var(--muted); }
+  .preview-wrap .preview-info strong { color: var(--text); display: block; font-size: 14px; }
+
+  .preview-remove {
+    margin-left: auto;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .tone-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .tone-pill {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+  }
+
+  .tone-pill:hover { border-color: var(--border-hover); color: var(--text); }
+
+  .tone-pill.active {
+    background: rgba(232,67,147,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .gen-btn {
+    width: 100%;
+    padding: 15px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    background: linear-gradient(135deg, #e84393, #7b5cff);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    margin-top: .5rem;
+    position: relative;
+    overflow: hidden;
+    transition: opacity .2s, transform .15s;
+  }
+
+  .gen-btn:hover { opacity: .9; }
+  .gen-btn:active { transform: scale(0.98); }
+  .gen-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    vertical-align: -2px;
+    margin-right: 7px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .results { margin-top: 1.2rem; display: none; }
+
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .their-bubble {
+    background: var(--surface2);
+    border-radius: 18px 18px 18px 4px;
+    padding: 10px 14px;
+    font-size: 14px;
+    display: inline-block;
+    max-width: 85%;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+  }
+
+  .msg-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.3rem;
+    margin-bottom: .8rem;
+    transition: border-color .2s, opacity .2s;
+    animation: fadeUp .3s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg-card:nth-child(2) { animation-delay: .08s; }
+  .msg-card:nth-child(3) { animation-delay: .16s; }
+
+  .msg-card.liked { border-color: var(--success); }
+  .msg-card.disliked { opacity: .35; }
+
+  .msg-style {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .msg-text {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  .msg-actions {
+    display: flex;
+    gap: 7px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all .15s;
+  }
+
+  .action-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .action-btn.like-on { border-color: var(--success); color: var(--success); background: rgba(45,212,164,0.08); }
+  .action-btn.dis-on { border-color: #e84343; color: #e84343; background: rgba(232,67,67,0.08); }
+  .action-btn.copy-on { border-color: var(--success); color: var(--success); background: rgba(45,212,164,0.08); }
+
+  .feedback-area {
+    margin-top: 12px;
+    display: none;
+    animation: fadeUp .2s ease;
+  }
+
+  .feedback-area.open { display: block; }
+
+  .feedback-hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 7px;
+  }
+
+  .feedback-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .feedback-input {
+    flex: 1;
+    font-size: 13px;
+    padding: 9px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    resize: none;
+  }
+
+  .feedback-input:focus { border-color: var(--accent); }
+
+  .feedback-send {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 9px 16px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity .15s;
+  }
+
+  .feedback-send:disabled { opacity: .5; }
+
+  .change-note {
+    font-size: 12px;
+    color: var(--success);
+    margin-top: 8px;
+    display: none;
+  }
+
+  .tip-card {
+    background: rgba(123,92,255,0.1);
+    border: 1px solid rgba(123,92,255,0.25);
+    border-radius: var(--radius-sm);
+    padding: .9rem 1.1rem;
+    font-size: 13px;
+    color: #b8aaff;
+    margin-top: .5rem;
+    line-height: 1.6;
+  }
+
+  .tip-card::before {
+    content: '💡 ';
+  }
+
+  .regen-btn {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .05em;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all .15s;
+  }
+
+  .regen-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.5rem 0;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3rem;
+    opacity: .5;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">FlirtAI</div>
+  <p class="tagline">Mensajes perfectos para Tinder, Bumble y más</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <div class="card-label"><span>📸</span> Foto del perfil</div>
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('img-input').click()">
+      <input type="file" id="img-input" accept="image/*" onchange="handleImg(this)">
+      <div class="upload-icon">📷</div>
+      <div class="upload-text"><strong>Toca para subir</strong> la foto del perfil</div>
+      <div class="upload-text" style="font-size:11px;margin-top:4px">opcional pero ayuda mucho</div>
+    </div>
+    <div class="preview-wrap" id="preview-wrap">
+      <img id="preview-img" src="" alt="Foto">
+      <div class="preview-info"><strong>Foto cargada</strong>La IA la analizará</div>
+      <button class="preview-remove" onclick="removeImg()">Eliminar</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label"><span>👤</span> Descripción / bio</div>
+    <textarea id="description" rows="3" placeholder="Ej: Chica de 26 años, le gusta el surf y viajar, trabaja de diseñadora, tiene fotos en Bali..."></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-label"><span>💬</span> Su mensaje (si ya te escribió)</div>
+    <textarea id="their-msg" rows="2" placeholder="Ej: Hola! Vi que también te gusta escalar 🧗 — déjalo vacío si es el primer mensaje"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-label"><span>✨</span> Tono</div>
+    <div class="tone-grid">
+      <button class="tone-pill active" onclick="setTone(this,'divertido y con humor')">😄 Divertido</button>
+      <button class="tone-pill" onclick="setTone(this,'misterioso e intrigante')">🌙 Misterioso</button>
+      <button class="tone-pill" onclick="setTone(this,'directo y seguro de sí mismo')">🎯 Directo</button>
+      <button class="tone-pill" onclick="setTone(this,'romántico y dulce')">🌹 Romántico</button>
+      <button class="tone-pill" onclick="setTone(this,'relajado y casual')">😎 Relajado</button>
+      <button class="tone-pill" onclick="setTone(this,'picante y coqueto')">🔥 Coqueto</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label"><span>🌍</span> Idioma</div>
+    <select id="lang-select">
+      <option value="español">🇪🇸 Español</option>
+      <option value="inglés">🇬🇧 Inglés</option>
+      <option value="catalán">Catalán</option>
+      <option value="francés">🇫🇷 Francés</option>
+      <option value="italiano">🇮🇹 Italiano</option>
+      <option value="portugués">🇵🇹 Portugués</option>
+      <option value="alemán">🇩🇪 Alemán</option>
+    </select>
+  </div>
+
+  <button class="gen-btn" id="gen-btn" onclick="generate()">✨ Generar mensajes</button>
+
+  <div class="results" id="results"></div>
+
+  <footer>FlirtAI — powered by Claude AI</footer>
+</div>
+
+<script>
+  let tone = 'divertido y con humor';
+  let imgBase64 = null;
+  let imgType = null;
+  let lastCtx = {};
+
+  function setTone(el, t) {
+    document.querySelectorAll('.tone-pill').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    tone = t;
+  }
+
+  function handleImg(input) {
+    const file = input.files[0];
+    if (!file) return;
+    imgType = file.type;
+    const reader = new FileReader();
+    reader.onload = e => {
+      imgBase64 = e.target.result.split(',')[1];
+      document.getElementById('preview-img').src = e.target.result;
+      document.getElementById('upload-zone').style.display = 'none';
+      document.getElementById('preview-wrap').style.display = 'flex';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeImg() {
+    imgBase64 = null; imgType = null;
+    document.getElementById('img-input').value = '';
+    document.getElementById('upload-zone').style.display = 'block';
+    document.getElementById('preview-wrap').style.display = 'none';
+  }
+
+  async function callAPI(prompt) {
+    const msgs = [];
+    if (imgBase64) {
+      msgs.push({ role: 'user', content: [
+        { type: 'image', source: { type: 'base64', media_type: imgType, data: imgBase64 } },
+        { type: 'text', text: prompt }
+      ]});
+    } else {
+      msgs.push({ role: 'user', content: prompt });
+    }
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: msgs })
+    });
+    const data = await res.json();
+    const raw = data.content.map(i => i.text || '').join('');
+    return JSON.parse(raw.replace(/```json|```/g, '').trim());
+  }
+
+  async function generate() {
+    const desc = document.getElementById('description').value.trim();
+    const theirMsg = document.getElementById('their-msg').value.trim();
+    const lang = document.getElementById('lang-select').value;
+    if (!desc && !imgBase64 && !theirMsg) { alert('Añade al menos una descripción o un mensaje recibido.'); return; }
+
+    lastCtx = { desc, theirMsg, lang, tone };
+    setLoading(true);
+    const isReply = theirMsg.length > 0;
+
+    const prompt = `Eres un experto en conversaciones de apps de citas (Tinder, Bumble).
+Genera 3 mensajes en ${lang} con tono ${tone}.
+${isReply ? 'Es una RESPUESTA a su mensaje.' : 'Es el PRIMER mensaje para romper el hielo.'}
+${desc ? 'Bio/descripción: ' + desc : ''}
+${theirMsg ? 'Su mensaje: "' + theirMsg + '"' : ''}
+Cada mensaje debe sonar natural, humano, nada robótico.
+Devuelve SOLO JSON sin texto extra:
+{"mensajes":[{"etiqueta":"nombre del estilo","texto":"el mensaje"},{"etiqueta":"nombre del estilo","texto":"el mensaje"},{"etiqueta":"nombre del estilo","texto":"el mensaje"}],"consejo":"consejo corto de 1 frase"}`;
+
+    try {
+      const data = await callAPI(prompt);
+      renderResults(data, isReply, theirMsg);
+    } catch(e) {
+      document.getElementById('results').style.display = 'block';
+      document.getElementById('results').innerHTML = '<p style="color:#e84343;font-size:14px;text-align:center;padding:1rem">Error al generar. Comprueba tu conexión e inténtalo de nuevo.</p>';
+    }
+    setLoading(false);
+  }
+
+  async function refine(idx, feedback) {
+    if (!feedback) return;
+    const { desc, theirMsg, lang, tone } = lastCtx;
+    const original = document.getElementById('mt-' + idx).textContent;
+    const btn = document.getElementById('fsend-' + idx);
+    btn.disabled = true; btn.textContent = '...';
+
+    const prompt = `Eres experto en apps de citas. Tienes este mensaje: "${original}"
+El usuario pide: "${feedback}"
+Tono: ${tone}, idioma: ${lang}${desc ? ', descripción: ' + desc : ''}${theirMsg ? ', respondiendo a: "' + theirMsg + '"' : ''}.
+Devuelve SOLO JSON:
+{"etiqueta":"estilo","texto":"mensaje mejorado","nota":"qué cambiaste en 1 frase corta"}`;
+
+    try {
+      const data = await callAPI(prompt);
+      document.getElementById('mt-' + idx).textContent = data.texto;
+      document.getElementById('ms-' + idx).textContent = data.etiqueta;
+      if (data.nota) {
+        const noteEl = document.getElementById('mnote-' + idx);
+        noteEl.textContent = '✓ ' + data.nota;
+        noteEl.style.display = 'block';
+      }
+      document.getElementById('fi-' + idx).value = '';
+      document.getElementById('fa-' + idx).classList.remove('open');
+    } catch(e) {}
+
+    btn.disabled = false; btn.textContent = 'Enviar';
+  }
+
+  function renderResults(data, isReply, theirMsg) {
+    const wrap = document.getElementById('results');
+    wrap.style.display = 'block';
+    let html = '';
+
+    if (isReply && theirMsg) {
+      html += `<div class="section-label">Su mensaje</div>
+        <div class="their-bubble">${escHtml(theirMsg)}</div>`;
+    }
+
+    html += `<div class="section-label">${isReply ? 'Tus respuestas' : 'Mensajes para romper el hielo'}</div>`;
+
+    data.mensajes.forEach((m, i) => {
+      html += `
+      <div class="msg-card" id="mc-${i}">
+        <div class="msg-style" id="ms-${i}">${escHtml(m.etiqueta)}</div>
+        <div class="msg-text" id="mt-${i}">${escHtml(m.texto)}</div>
+        <div class="change-note" id="mnote-${i}"></div>
+        <div class="msg-actions">
+          <button class="action-btn" id="lb-${i}" onclick="toggleLike(${i})">👍 Me gusta</button>
+          <button class="action-btn" id="db-${i}" onclick="toggleDis(${i})">👎 No me gusta</button>
+          <button class="action-btn" onclick="toggleFeedback(${i})">✏️ Cambiar algo</button>
+          <button class="action-btn" id="cb-${i}" onclick="copyMsg(${i})">📋 Copiar</button>
+        </div>
+        <div class="feedback-area" id="fa-${i}">
+          <div class="feedback-hint">¿Qué quieres que cambie? Sé específico:</div>
+          <div class="feedback-row">
+            <input class="feedback-input" id="fi-${i}" type="text"
+              placeholder="Ej: hazlo más corto, añade humor, menciona el surf..."
+              onkeydown="if(event.key==='Enter')document.getElementById('fsend-${i}').click()">
+            <button class="feedback-send" id="fsend-${i}"
+              onclick="refine(${i}, document.getElementById('fi-${i}').value.trim())">Enviar</button>
+          </div>
+        </div>
+      </div>`;
+    });
+
+    if (data.consejo) {
+      html += `<div class="tip-card">${escHtml(data.consejo)}</div>`;
+    }
+
+    html += `<button class="regen-btn" onclick="generate()">↻ Generar nuevos mensajes</button>`;
+    wrap.innerHTML = html;
+  }
+
+  function toggleLike(i) {
+    const card = document.getElementById('mc-' + i);
+    const btn = document.getElementById('lb-' + i);
+    const dBtn = document.getElementById('db-' + i);
+    const on = btn.classList.contains('like-on');
+    btn.classList.toggle('like-on', !on);
+    card.classList.toggle('liked', !on);
+    dBtn.classList.remove('dis-on');
+    card.classList.remove('disliked');
+  }
+
+  function toggleDis(i) {
+    const card = document.getElementById('mc-' + i);
+    const btn = document.getElementById('db-' + i);
+    const lBtn = document.getElementById('lb-' + i);
+    const on = btn.classList.contains('dis-on');
+    btn.classList.toggle('dis-on', !on);
+    card.classList.toggle('disliked', !on);
+    lBtn.classList.remove('like-on');
+    card.classList.remove('liked');
+  }
+
+  function toggleFeedback(i) {
+    const fa = document.getElementById('fa-' + i);
+    fa.classList.toggle('open');
+    if (fa.classList.contains('open')) document.getElementById('fi-' + i).focus();
+  }
+
+  function copyMsg(i) {
+    const text = document.getElementById('mt-' + i).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('cb-' + i);
+      btn.classList.add('copy-on');
+      btn.textContent = '✓ Copiado';
+      setTimeout(() => { btn.classList.remove('copy-on'); btn.textContent = '📋 Copiar'; }, 1600);
+    });
+  }
+
+  function setLoading(on) {
+    const btn = document.getElementById('gen-btn');
+    btn.disabled = on;
+    btn.innerHTML = on ? '<span class="spinner"></span> Generando...' : '✨ Generar mensajes';
+    if (!on) return;
+    document.getElementById('results').style.display = 'none';
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>
