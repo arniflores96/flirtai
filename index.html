@@ -1,4 +1,4 @@
-</html><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -552,6 +552,8 @@
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: msgs })
     });
     const data = await res.json();
+    if (data.error) throw new Error('API error: ' + JSON.stringify(data.error));
+    if (!data.content) throw new Error('No content: ' + JSON.stringify(data));
     const raw = data.content.map(i => i.text || '').join('');
     return JSON.parse(raw.replace(/```json|```/g, '').trim());
   }
@@ -579,7 +581,7 @@ Devuelve SOLO JSON sin texto extra:
       renderResults(data, isReply, theirMsg);
     } catch(e) {
       document.getElementById('results').style.display = 'block';
-      document.getElementById('results').innerHTML = '<p style="color:#e84343;font-size:14px;text-align:center;padding:1rem">Error al generar. Comprueba tu conexion e intentalo de nuevo.</p>';
+      document.getElementById('results').innerHTML = '<p style="color:#e84343;font-size:13px;text-align:center;padding:1rem">Error: ' + e.message + '</p>';
     }
     setLoading(false);
   }
@@ -709,3 +711,4 @@ Devuelve SOLO JSON:
   }
 </script>
 </body>
+</html>
