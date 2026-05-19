@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+</html><!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -452,23 +452,18 @@
 <div class="container">
 
   <div class="card">
-    <div class="card-label"><span>📸</span> Foto del perfil</div>
+    <div class="card-label"><span>📲</span> Captura del perfil</div>
     <div class="upload-zone" id="upload-zone" onclick="document.getElementById('img-input').click()">
       <input type="file" id="img-input" accept="image/*" onchange="handleImg(this)">
-      <div class="upload-icon">📷</div>
-      <div class="upload-text"><strong>Toca para subir</strong> la foto del perfil</div>
-      <div class="upload-text" style="font-size:11px;margin-top:4px">opcional pero ayuda mucho</div>
+      <div class="upload-icon">📲</div>
+      <div class="upload-text"><strong>Sube la captura</strong> de su perfil de Tinder, Bumble...</div>
+      <div class="upload-text" style="font-size:11px;margin-top:4px">La IA leerá la bio y las fotos automáticamente</div>
     </div>
     <div class="preview-wrap" id="preview-wrap">
-      <img id="preview-img" src="" alt="Foto">
-      <div class="preview-info"><strong>Foto cargada</strong>La IA la analizará</div>
-      <button class="preview-remove" onclick="removeImg()">Eliminar</button>
+      <img id="preview-img" src="" alt="Captura del perfil" style="border-radius:10px;width:80px;height:80px;object-fit:cover;">
+      <div class="preview-info"><strong>Captura cargada ✓</strong>La IA analizará la bio y la foto</div>
+      <button class="preview-remove" onclick="removeImg()">Cambiar</button>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="card-label"><span>👤</span> Descripción / bio</div>
-    <textarea id="description" rows="3" placeholder="Ej: Chica de 26 años, le gusta el surf y viajar, trabaja de diseñadora, tiene fotos en Bali..."></textarea>
   </div>
 
   <div class="card">
@@ -551,7 +546,7 @@
     } else {
       msgs.push({ role: 'user', content: prompt });
     }
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/.netlify/functions/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: msgs })
@@ -562,21 +557,20 @@
   }
 
   async function generate() {
-    const desc = document.getElementById('description').value.trim();
     const theirMsg = document.getElementById('their-msg').value.trim();
     const lang = document.getElementById('lang-select').value;
-    if (!desc && !imgBase64 && !theirMsg) { alert('Añade al menos una descripción o un mensaje recibido.'); return; }
+    if (!imgBase64 && !theirMsg) { alert('Sube la captura del perfil o pega su mensaje para continuar.'); return; }
 
-    lastCtx = { desc, theirMsg, lang, tone };
+    lastCtx = { theirMsg, lang, tone };
     setLoading(true);
     const isReply = theirMsg.length > 0;
 
     const prompt = `Eres un experto en conversaciones de apps de citas (Tinder, Bumble).
+${imgBase64 ? 'Analiza la captura de pantalla del perfil: lee el nombre, la bio, los intereses, las fotos y cualquier detalle visible. Usalo todo para personalizar los mensajes.' : ''}
 Genera 3 mensajes en ${lang} con tono ${tone}.
 ${isReply ? 'Es una RESPUESTA a su mensaje.' : 'Es el PRIMER mensaje para romper el hielo.'}
-${desc ? 'Bio/descripción: ' + desc : ''}
 ${theirMsg ? 'Su mensaje: "' + theirMsg + '"' : ''}
-Cada mensaje debe sonar natural, humano, nada robótico.
+Cada mensaje debe sonar natural, humano, nada robotico. Menciona detalles especificos del perfil cuando sea posible.
 Devuelve SOLO JSON sin texto extra:
 {"mensajes":[{"etiqueta":"nombre del estilo","texto":"el mensaje"},{"etiqueta":"nombre del estilo","texto":"el mensaje"},{"etiqueta":"nombre del estilo","texto":"el mensaje"}],"consejo":"consejo corto de 1 frase"}`;
 
@@ -585,23 +579,23 @@ Devuelve SOLO JSON sin texto extra:
       renderResults(data, isReply, theirMsg);
     } catch(e) {
       document.getElementById('results').style.display = 'block';
-      document.getElementById('results').innerHTML = '<p style="color:#e84343;font-size:14px;text-align:center;padding:1rem">Error al generar. Comprueba tu conexión e inténtalo de nuevo.</p>';
+      document.getElementById('results').innerHTML = '<p style="color:#e84343;font-size:14px;text-align:center;padding:1rem">Error al generar. Comprueba tu conexion e intentalo de nuevo.</p>';
     }
     setLoading(false);
   }
 
   async function refine(idx, feedback) {
     if (!feedback) return;
-    const { desc, theirMsg, lang, tone } = lastCtx;
+    const { theirMsg, lang, tone } = lastCtx;
     const original = document.getElementById('mt-' + idx).textContent;
     const btn = document.getElementById('fsend-' + idx);
     btn.disabled = true; btn.textContent = '...';
 
     const prompt = `Eres experto en apps de citas. Tienes este mensaje: "${original}"
 El usuario pide: "${feedback}"
-Tono: ${tone}, idioma: ${lang}${desc ? ', descripción: ' + desc : ''}${theirMsg ? ', respondiendo a: "' + theirMsg + '"' : ''}.
+Tono: ${tone}, idioma: ${lang}${theirMsg ? ', respondiendo a: "' + theirMsg + '"' : ''}.
 Devuelve SOLO JSON:
-{"etiqueta":"estilo","texto":"mensaje mejorado","nota":"qué cambiaste en 1 frase corta"}`;
+{"etiqueta":"estilo","texto":"mensaje mejorado","nota":"que cambiaste en 1 frase corta"}`;
 
     try {
       const data = await callAPI(prompt);
@@ -715,4 +709,3 @@ Devuelve SOLO JSON:
   }
 </script>
 </body>
-</html>
