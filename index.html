@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Studio AI — Minimalist Interface</title>
+<title>Flirtai.es — Minimalist Interface</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Fuentes de alta tecnología: Inter para la interfaz y Space Mono para métricas/datos -->
@@ -32,7 +32,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* PANTALLA DE ACCESO (REQUISITO 4) */
+  /* PANTALLA DE ACCESO CON URL OFICIAL (REQUISITO 4) */
   #auth-screen {
     position: fixed;
     inset: 0;
@@ -58,6 +58,11 @@
     letter-spacing: -0.5px;
     text-align: center;
     margin-bottom: 2rem;
+  }
+  .auth-title span {
+    color: var(--accent-gray);
+    font-size: 1.2rem;
+    font-weight: 400;
   }
   .auth-form-group {
     margin-bottom: 1.5rem;
@@ -137,7 +142,7 @@
     display: block;
   }
 
-  /* CUADRO MÉTRES DE LÍMITE (REQUISITO 3) */
+  /* CUADRO MÉTRICAS DE LÍMITE (REQUISITO 3) */
   .limit-box {
     border: 1px solid var(--border-thin);
     padding: 1rem;
@@ -198,7 +203,6 @@
     align-items: center;
     gap: 8px;
   }
-  /* El icónico punto LED rojo estilo Nothing Tech */
   .logo::before {
     content: '';
     width: 6px;
@@ -438,10 +442,10 @@
 </head>
 <body>
 
-<!-- PANTALLA REGISTRO/LOGIN (REQUISITO 4) -->
+<!-- PANTALLA REGISTRO/LOGIN CON DOMINIO FLIRTAI.ES (REQUISITO 4) -->
 <div id="auth-screen">
   <div class="auth-box">
-    <div class="auth-title">Terminal Authentication</div>
+    <div class="auth-title">Flirtai<span>.es</span></div>
     <form onsubmit="handleAuth(event)">
       <div class="auth-form-group">
         <label>User Identity (Email)</label>
@@ -481,7 +485,7 @@
 <!-- PANEL DE CONTROL PRINCIPAL -->
 <main>
   <header>
-    <div class="logo">CORE ENGINE</div>
+    <div class="logo">FLIRTAI.ES — CORE</div>
     
     <!-- DETECTOR DE IDIOMA (REQUISITO 6) -->
     <div class="lang-badge">
@@ -648,7 +652,6 @@ Retorna ÚNICAMENTE un esquema JSON sin marcas markdown:
       saveChatToHistory(chatName, data, theirMsg);
       renderResults(data, theirMsg);
     } catch(e) {
-      // Fallback visual para simulación limpia en desarrollo local
       const mockData = {
         idioma: "Español",
         mensajes: [
