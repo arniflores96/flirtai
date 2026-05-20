@@ -66,7 +66,6 @@
     font-weight: 400;
   }
 
-  /* Selector de pestañas industrial */
   .auth-tabs {
     display: flex;
     border-bottom: 1px solid var(--border-thin);
@@ -108,7 +107,6 @@
     gap: 1rem;
   }
 
-  /* Checkbox personalizado */
   .auth-checkbox-group {
     display: flex;
     align-items: flex-start;
@@ -217,12 +215,12 @@
     <!-- MÓDULO INICIAR SESIÓN -->
     <form id="form-login" onsubmit="handleLogin(event)">
       <div class="auth-form-group">
-        <label>User Identity (Email)</label>
-        <input type="email" id="login-email" required placeholder="name@domain.com">
+        <label>User Identity (Email / ID)</label>
+        <input type="text" id="login-email" required placeholder="arniflores@flirtai.es">
       </div>
-      <div class="auth-form-group">
+      <div class="auth-form-group" id="pass-field-group">
         <label>Security Key (Password)</label>
-        <input type="password" id="login-pass" required placeholder="••••••••">
+        <input type="password" id="login-pass" placeholder="••••••••">
       </div>
       <button type="submit" class="gen-btn" style="margin-top: 1rem;">Initialize Session</button>
     </form>
@@ -323,13 +321,18 @@
   let currentUser = null; let currentLanguage = 'español';
   let chatsHistory = []; let activeChatId = null;
 
-  // CREDENCIALES PRIVADAS DEL DUEÑO
+  // IDENTIFICADOR MAESTRO DEL PROPIETARIO
   const ADMIN_EMAIL = "arniflores@flirtai.es";
-  const ADMIN_PASSWORD = "TuContraseñaSeguraAquí"; // <-- Cámbiala aquí antes de usar en producción
 
   window.onload = function() {
-    const session = localStorage.getItem('fl_session_min');
-    if(session) { currentUser = session; initApp(); }
+    // Forzar limpieza de sesiones anteriores corruptas para evitar bloqueos
+    localStorage.removeItem('fl_session_min');
+    
+    // Escuchar el input de login para ocultar la contraseña de forma dinámica si eres tú
+    document.getElementById('login-email').addEventListener('input', function(e) {
+      const val = e.target.value.trim().toLowerCase();
+      document.getElementById('pass-field-group').style.display = (val === ADMIN_EMAIL) ? 'none' : 'block';
+    });
   };
 
   function switchAuthMode(mode) {
@@ -344,8 +347,23 @@
     const email = document.getElementById('login-email').value.trim().toLowerCase();
     const pass = document.getElementById('login-pass').value;
 
-    if (email === ADMIN_EMAIL && pass !== ADMIN_PASSWORD) {
-      alert("Acceso denegado: Firma criptográfica inválida para el propietario.");
+    // SI ERES TÚ, PASAS DIRECTO SIN CONTRASEÑA
+    if (email === ADMIN_EMAIL) {
+      currentUser = ADMIN_EMAIL;
+      localStorage.setItem('fl_session_min', ADMIN_EMAIL);
+      initApp();
+      return;
+    }
+
+    // SI ES UN USUARIO NORMAL, SE VERIFICA SU CONTRASEÑA REGISTRADA
+    const storedUser = localStorage.getItem(`meta_${email}`);
+    if (!storedUser) {
+      alert("Identidad no encontrada. Por favor, regístrese primero.");
+      return;
+    }
+    const userData = JSON.parse(storedUser);
+    if (userData.pass !== pass) {
+      alert("Clave de seguridad incorrecta.");
       return;
     }
 
@@ -364,15 +382,14 @@
     const pass = document.getElementById('reg-pass').value;
 
     if(email === ADMIN_EMAIL) {
-      alert("Acción inválida. Esta cuenta raíz está pre-registrada estructuralmente.");
+      alert("Acción inválida. Este identificador maestro pertenece al dueño de la plataforma.");
       return;
     }
 
-    // Simulación de persistencia local del perfil registrado
     const userMetadata = { name, dni, address, pass };
     localStorage.setItem(`meta_${email}`, JSON.stringify(userMetadata));
     
-    alert(`Registro correcto. Identidad [${dni}] verificada mediante declaración legal.`);
+    alert(`Registro correcto. Identidad [${dni}] verificada.`);
     currentUser = email;
     localStorage.setItem('fl_session_min', email);
     localStorage.setItem(`use_min_${currentUser}`, '0');
@@ -382,6 +399,9 @@
   function logout() {
     localStorage.removeItem('fl_session_min');
     currentUser = null;
+    document.getElementById('login-email').value = '';
+    document.getElementById('login-pass').value = '';
+    document.getElementById('pass-field-group').style.display = 'block';
     document.getElementById('auth-screen').style.display = 'flex';
   }
 
