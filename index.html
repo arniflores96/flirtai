@@ -3,515 +3,699 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FlirtAI — Mensajes para apps de citas</title>
+<title>FlirtAI — Racing Edition 90s</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Fuentes F1: Archivo Black para títulos hiper-anchos e itálicos y Space Grotesk para interfaz limpia -->
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0d0d0f;
-    --surface: #16161a;
-    --surface2: #1e1e24;
-    --border: rgba(255,255,255,0.08);
-    --border-hover: rgba(255,255,255,0.16);
-    --accent: #e84393;
-    --accent2: #7b5cff;
-    --text: #f0eeff;
-    --muted: #8a8799;
-    --success: #2dd4a4;
-    --radius: 16px;
-    --radius-sm: 10px;
+    --bg-dark: #0F1015;        /* Negro asfalto */
+    --white-marlboro: #FFFFFF; /* Blanco puro de carrocería */
+    --red-marlboro: #FF1800;   /* Rojo fluorescente / Rocket Red */
+    --yellow-camel: #FCE300;   /* Amarillo carrera intenso */
+    --blue-camel: #0038A8;     /* Azul cobalto de patrocinio */
+    --text-dark: #0F1015;
+    --text-light: #FFFFFF;
   }
 
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-light);
+    font-family: 'Space Grotesk', sans-serif;
     min-height: 100vh;
-    padding-bottom: 4rem;
-  }
-
-  header {
-    text-align: center;
-    padding: 3rem 1.5rem 2rem;
-    position: relative;
+    display: flex;
     overflow: hidden;
   }
 
-  header::before {
+  /* ESTILOS DE FUENTE RACING (ANCHO E INCLINADO) */
+  .racing-font {
+    font-family: 'Archivo Black', sans-serif;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+  }
+
+  /* PANTALLA DE LOGUEO / REGISTRO (REQUISITO 4) */
+  #auth-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-dark);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    /* Fondo decorativo con líneas de carrera diagonales */
+    background-image: linear-gradient(45deg, #161822 25%, transparent 25%, transparent 50%, #161822 50%, #161822 75%, transparent 75%, transparent);
+    background-size: 40px 40px;
+  }
+  .auth-box {
+    background: var(--white-marlboro);
+    color: var(--text-dark);
+    border: 4px solid var(--text-dark);
+    box-shadow: 8px 8px 0px var(--red-marlboro);
+    max-width: 420px;
+    width: 100%;
+    padding: 2.5rem 2rem;
+    position: relative;
+  }
+  /* Chevron estilo Marlboro en la esquina del login */
+  .auth-box::before {
     content: '';
     position: absolute;
-    top: -60px; left: 50%;
+    top: 0; left: 50%;
     transform: translateX(-50%);
-    width: 500px; height: 300px;
-    background: radial-gradient(ellipse, rgba(232,67,147,0.18) 0%, transparent 70%);
-    pointer-events: none;
+    width: 0; height: 0;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-top: 25px solid var(--red-marlboro);
   }
-
-  .logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: clamp(2rem, 8vw, 3.2rem);
-    letter-spacing: -0.03em;
-    background: linear-gradient(135deg, #e84393 0%, #7b5cff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .auth-title {
+    font-size: 2.3rem;
+    color: var(--text-dark);
+    text-align: center;
+    margin-bottom: 0.2rem;
+    margin-top: 10px;
   }
-
-  .tagline {
-    font-size: 14px;
-    color: var(--muted);
-    margin-top: 6px;
-    font-weight: 300;
-    letter-spacing: 0.04em;
-  }
-
-  .container {
-    max-width: 520px;
-    margin: 0 auto;
-    padding: 0 1.2rem;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.3rem 1.4rem;
-    margin-bottom: 1rem;
-    transition: border-color .2s;
-  }
-
-  .card:focus-within { border-color: var(--border-hover); }
-
-  .card-label {
-    font-family: 'Syne', sans-serif;
+  .auth-subtitle {
     font-size: 11px;
-    font-weight: 600;
-    letter-spacing: .1em;
+    font-weight: 700;
+    text-align: center;
+    color: var(--blue-camel);
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+  }
+  .auth-form-group {
+    margin-bottom: 1.2rem;
+  }
+  .auth-form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
     text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 10px;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+
+  /* BARRA LATERAL: HISTORIAL E INTERACCIONES (REQUISITO 1 Y 3) */
+  aside {
+    width: 320px;
+    background: #161822;
+    border-right: 4px solid var(--white-marlboro);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    z-index: 10;
+  }
+  .aside-header {
+    background: var(--red-marlboro);
+    color: var(--white-marlboro);
+    padding: 1.5rem 1rem;
+    border-bottom: 4px solid var(--text-dark);
+    clip-path: polygon(0 0, 100% 0, 100% 80%, 0% 100%); /* Corte aerodinámico */
+  }
+  .aside-header h1 {
+    font-size: 1.6rem;
+  }
+  .history-list {
+    padding: 1rem;
+    overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .history-item {
+    width: 100%;
+    text-align: left;
+    background: var(--white-marlboro);
+    color: var(--text-dark);
+    border: 3px solid var(--text-dark);
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 700;
+  }
+  /* Cambio de color agresivo al pasar el ratón (Estilo Camel) */
+  .history-item:hover, .history-item.active {
+    background: var(--yellow-camel);
+    color: var(--blue-camel);
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0px var(--red-marlboro);
+  }
+  .history-name {
+    font-size: 14px;
+    text-transform: uppercase;
+    display: block;
+  }
+  .history-meta {
+    font-size: 11px;
+    opacity: 0.7;
+    font-style: italic;
+  }
+
+  /* PANEL DE ADVERTENCIA / LÍMITE DE PIT LANE (REQUISITO 3) */
+  .warning-box {
+    border: 4px solid var(--red-marlboro);
+    background: var(--white-marlboro);
+    color: var(--text-dark);
+    padding: 1.2rem 1rem;
+    margin: 1rem;
+    position: relative;
+  }
+  /* Detalle de bandera a cuadros (Damero) superior */
+  .warning-box::before {
+    content: '';
+    position: absolute;
+    top: -4px; left: -4px; right: -4px; height: 8px;
+    background-image: linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), linear-gradient(45deg, #000 25%, #fff 25%, #fff 75%, #000 75%, #000);
+    background-size: 8px 8px;
+    background-position: 0 0, 4px 4px;
+  }
+  .warning-title {
+    font-size: 12px;
+    font-weight: 800;
+    text-align: center;
+    color: var(--red-marlboro);
+  }
+  .warning-counter {
+    font-size: 1.8rem;
+    text-align: center;
+    margin: 0.3rem 0;
+    display: block;
+  }
+  .warning-bar {
+    width: 100%;
+    height: 12px;
+    background: #E0E0E0;
+    border: 2px solid var(--text-dark);
+  }
+  .warning-progress {
+    height: 100%;
+    background: var(--blue-camel);
+    width: 0%;
+    transition: width 0.4s ease-out;
+  }
+
+  /* PANEL PRINCIPAL */
+  main {
+    flex-grow: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #1C1E29;
+  }
+
+  header {
+    background: var(--white-marlboro);
+    color: var(--text-dark);
+    border-bottom: 4px solid var(--red-marlboro);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo {
+    font-size: 2.2rem;
+    color: var(--red-marlboro);
+    text-shadow: 2px 2px 0px var(--yellow-camel);
+  }
+  .tagline {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--blue-camel);
+  }
+
+  /* INDICADOR DE IDIOMA BOX (REQUISITO 6) */
+  .lang-badge {
+    border: 3px solid var(--text-dark);
+    background: var(--yellow-camel);
+    color: var(--blue-camel);
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 800;
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
+    box-shadow: 3px 3px 0px var(--text-dark);
+  }
+  .lang-badge span.detected {
+    background: var(--red-marlboro);
+    color: var(--white-marlboro);
+    padding: 2px 6px;
+    font-style: italic;
+  }
+  .lang-badge button {
+    background: none;
+    border: none;
+    text-decoration: underline;
+    color: var(--text-dark);
+    cursor: pointer;
+    font-weight: bold;
   }
 
-  .card-label span {
-    display: inline-flex;
-    width: 22px; height: 22px;
-    background: var(--surface2);
-    border-radius: 6px;
-    align-items: center;
-    justify-content: center;
+  /* ZONA DE TRABAJO */
+  .workspace {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 2rem;
+  }
+  .layout-grid {
+    max-width: 750px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* CONTENEDORES ARCADE / MECÁNICOS */
+  .card {
+    background: #242736;
+    border: 3px solid var(--white-marlboro);
+    padding: 1.5rem;
+    position: relative;
+  }
+  .card-label {
     font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--yellow-camel);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 1px;
   }
 
-  textarea, input[type="text"], select {
+  textarea, input[type="text"], input[type="email"], input[type="password"] {
     width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
+    background: var(--white-marlboro);
+    border: 3px solid var(--text-dark);
+    color: var(--text-dark);
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 14px;
-    padding: 10px 13px;
+    font-weight: 700;
+    padding: 12px;
     outline: none;
-    transition: border-color .2s;
-    resize: vertical;
+  }
+  textarea:focus, input:focus {
+    border-color: var(--red-marlboro);
+    background: #FFFFF0;
   }
 
-  textarea:focus, input[type="text"]:focus, select:focus {
-    border-color: var(--accent);
-  }
-
-  textarea::placeholder, input::placeholder { color: var(--muted); }
-
-  select option { background: #1e1e24; }
-
+  /* SUBIDA DE FOTOS */
   .upload-zone {
-    border: 1.5px dashed rgba(232,67,147,0.3);
-    border-radius: var(--radius-sm);
-    padding: 1.4rem 1rem;
+    border: 3px dashed var(--yellow-camel);
+    padding: 1.5rem;
     text-align: center;
     cursor: pointer;
-    transition: all .2s;
-    background: rgba(232,67,147,0.03);
+    background: rgba(252,227,0,0.05);
   }
-
-  .upload-zone:hover {
-    border-color: var(--accent);
-    background: rgba(232,67,147,0.07);
-  }
-
-  .upload-zone input { display: none; }
-
-  .upload-icon {
-    width: 40px; height: 40px;
-    background: rgba(232,67,147,0.12);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 8px;
-    font-size: 18px;
-  }
-
-  .upload-text { font-size: 13px; color: var(--muted); }
-  .upload-text strong { color: var(--accent); font-weight: 500; }
+  .upload-text { font-size: 13px; font-weight: bold; }
+  .upload-text strong { color: var(--yellow-camel); }
 
   .preview-wrap {
     display: none;
     align-items: center;
-    gap: 12px;
+    gap: 15px;
   }
-
   .preview-wrap img {
-    width: 60px; height: 60px;
-    border-radius: 50%;
+    width: 80px; height: 80px;
     object-fit: cover;
-    border: 2px solid var(--accent);
+    border: 3px solid var(--white-marlboro);
   }
-
-  .preview-wrap .preview-info { font-size: 13px; color: var(--muted); }
-  .preview-wrap .preview-info strong { color: var(--text); display: block; font-size: 14px; }
-
   .preview-remove {
-    margin-left: auto;
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--muted);
+    background: var(--red-marlboro);
+    color: #FFF;
+    border: 2px solid var(--text-dark);
+    padding: 6px 12px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 11px;
+  }
+
+  /* RECUADRO DE MATICES DE 175 CARACTERES (REQUISITO 2) */
+  .char-counter {
+    float: right;
     font-size: 12px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
+    font-weight: bold;
+    color: var(--red-marlboro);
   }
 
-  .tone-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-  }
-
-  .tone-pill {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    padding: 6px 14px;
-    border-radius: 100px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    color: var(--muted);
-    cursor: pointer;
-    transition: all .15s;
-  }
-
-  .tone-pill:hover { border-color: var(--border-hover); color: var(--text); }
-
-  .tone-pill.active {
-    background: rgba(232,67,147,0.15);
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
+  /* BOTÓN DE ACCIÓN PRINCIPAL (DISPARADOR COMPLETAMENTE FIERCE) */
   .gen-btn {
     width: 100%;
-    padding: 15px;
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: .04em;
-    background: linear-gradient(135deg, #e84393, #7b5cff);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
+    padding: 18px;
+    font-size: 18px;
+    background: var(--red-marlboro);
+    color: var(--white-marlboro);
+    border: 4px solid var(--text-dark);
+    box-shadow: 6px 6px 0px var(--yellow-camel);
     cursor: pointer;
-    margin-top: .5rem;
-    position: relative;
-    overflow: hidden;
-    transition: opacity .2s, transform .15s;
+    transition: transform 0.05s, box-shadow 0.05s;
   }
-
-  .gen-btn:hover { opacity: .9; }
-  .gen-btn:active { transform: scale(0.98); }
-  .gen-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .gen-btn:hover {
+    background: var(--yellow-camel);
+    color: var(--blue-camel);
+    box-shadow: 6px 6px 0px var(--white-marlboro);
+  }
+  .gen-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 3px 3px 0px var(--text-dark);
+  }
+  .gen-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
 
   .spinner {
     display: inline-block;
-    width: 14px; height: 14px;
-    border: 2px solid rgba(255,255,255,0.3);
+    width: 16px; height: 16px;
+    border: 3px solid rgba(255,255,255,0.3);
     border-top-color: #fff;
     border-radius: 50%;
     animation: spin .7s linear infinite;
-    vertical-align: -2px;
-    margin-right: 7px;
+    margin-right: 10px;
   }
-
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .results { margin-top: 1.2rem; display: none; }
-
+  /* CAJAS DE RESPUESTAS TIPO ESCUDERÍA */
+  .results { margin-top: 2rem; display: none; }
   .section-label {
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .1em;
+    font-size: 13px;
+    font-weight: 800;
     text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    color: var(--white-marlboro);
+    letter-spacing: 1px;
   }
-
   .their-bubble {
-    background: var(--surface2);
-    border-radius: 18px 18px 18px 4px;
-    padding: 10px 14px;
+    background: var(--blue-camel);
+    color: var(--white-marlboro);
+    border: 3px solid var(--white-marlboro);
+    padding: 12px;
     font-size: 14px;
     display: inline-block;
-    max-width: 85%;
-    margin-bottom: 14px;
-    border: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+    font-weight: bold;
   }
-
   .msg-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.1rem 1.3rem;
-    margin-bottom: .8rem;
-    transition: border-color .2s, opacity .2s;
-    animation: fadeUp .3s ease both;
+    background: var(--white-marlboro);
+    color: var(--text-dark);
+    border: 4px solid var(--text-dark);
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    box-shadow: 4px 4px 0px var(--red-marlboro);
+    position: relative;
   }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .msg-card:nth-child(2) { animation-delay: .08s; }
-  .msg-card:nth-child(3) { animation-delay: .16s; }
-
-  .msg-card.liked { border-color: var(--success); }
-  .msg-card.disliked { opacity: .35; }
-
+  .msg-card.liked { border-color: #00FF66; box-shadow: 4px 4px 0px #00FF66; }
+  .msg-card.disliked { opacity: 0.35; }
   .msg-style {
-    font-family: 'Syne', sans-serif;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .1em;
+    font-size: 11px;
+    font-weight: 900;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--blue-camel);
     margin-bottom: 8px;
+    border-bottom: 2px solid var(--red-marlboro);
+    display: inline-block;
   }
+  .msg-text { font-size: 16px; font-weight: 700; line-height: 1.5; }
 
-  .msg-text {
-    font-size: 15px;
-    line-height: 1.65;
-    color: var(--text);
-  }
-
-  .msg-actions {
-    display: flex;
-    gap: 7px;
-    margin-top: 12px;
-    flex-wrap: wrap;
-  }
-
+  .msg-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
   .action-btn {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    padding: 5px 12px;
-    border-radius: 100px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    color: var(--muted);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: all .15s;
-  }
-
-  .action-btn:hover { border-color: var(--border-hover); color: var(--text); }
-  .action-btn.like-on { border-color: var(--success); color: var(--success); background: rgba(45,212,164,0.08); }
-  .action-btn.dis-on { border-color: #e84343; color: #e84343; background: rgba(232,67,67,0.08); }
-  .action-btn.copy-on { border-color: var(--success); color: var(--success); background: rgba(45,212,164,0.08); }
-
-  .feedback-area {
-    margin-top: 12px;
-    display: none;
-    animation: fadeUp .2s ease;
-  }
-
-  .feedback-area.open { display: block; }
-
-  .feedback-hint {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 7px;
-  }
-
-  .feedback-row {
-    display: flex;
-    gap: 8px;
-  }
-
-  .feedback-input {
-    flex: 1;
-    font-size: 13px;
-    padding: 9px 12px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    outline: none;
-    resize: none;
-  }
-
-  .feedback-input:focus { border-color: var(--accent); }
-
-  .feedback-send {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 12px;
     font-weight: 700;
-    padding: 9px 16px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    border: 2px solid var(--text-dark);
+    background: var(--white-marlboro);
     cursor: pointer;
-    white-space: nowrap;
-    transition: opacity .15s;
   }
-
-  .feedback-send:disabled { opacity: .5; }
-
-  .change-note {
-    font-size: 12px;
-    color: var(--success);
-    margin-top: 8px;
-    display: none;
-  }
+  .action-btn.like-on { background: #00FF66; color: var(--text-dark); }
+  .action-btn.dis-on { background: var(--red-marlboro); color: var(--white-marlboro); }
+  .action-btn.copy-on { background: var(--blue-camel); color: var(--white-marlboro); }
 
   .tip-card {
-    background: rgba(123,92,255,0.1);
-    border: 1px solid rgba(123,92,255,0.25);
-    border-radius: var(--radius-sm);
-    padding: .9rem 1.1rem;
-    font-size: 13px;
-    color: #b8aaff;
-    margin-top: .5rem;
-    line-height: 1.6;
-  }
-
-  .tip-card::before {
-    content: '💡 ';
+    background: var(--yellow-camel);
+    color: var(--text-dark);
+    border: 3px solid var(--text-dark);
+    padding: 1rem;
+    font-size: 14px;
+    font-weight: 700;
+    margin-top: 1.5rem;
   }
 
   .regen-btn {
     width: 100%;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     padding: 12px;
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: .05em;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--muted);
-    border-radius: var(--radius);
+    font-family: 'Archivo Black', sans-serif;
+    font-style: italic;
+    background: none;
+    color: var(--white-marlboro);
+    border: 3px dashed var(--white-marlboro);
     cursor: pointer;
-    transition: all .15s;
+    text-transform: uppercase;
   }
-
-  .regen-btn:hover { border-color: var(--border-hover); color: var(--text); }
-
-  .divider {
+  .regen-btn:hover { background: rgba(255,255,255,0.05); }
+  
+  .logout-btn {
+    background: none;
     border: none;
-    border-top: 1px solid var(--border);
-    margin: 1.5rem 0;
-  }
-
-  footer {
-    text-align: center;
+    color: var(--red-marlboro);
+    text-decoration: underline;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: bold;
     font-size: 12px;
-    color: var(--muted);
-    margin-top: 3rem;
-    opacity: .5;
+    cursor: pointer;
+    margin-top: 8px;
+    display: block;
   }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">FlirtAI</div>
-  <p class="tagline">Mensajes perfectos para Tinder, Bumble y más</p>
-</header>
-
-<div class="container">
-
-  <div class="card">
-    <div class="card-label"><span>📲</span> Captura del perfil</div>
-    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('img-input').click()">
-      <input type="file" id="img-input" accept="image/*" onchange="handleImg(this)">
-      <div class="upload-icon">📲</div>
-      <div class="upload-text"><strong>Sube la captura</strong> de su perfil de Tinder, Bumble...</div>
-      <div class="upload-text" style="font-size:11px;margin-top:4px">La IA leerá la bio y las fotos automáticamente</div>
-    </div>
-    <div class="preview-wrap" id="preview-wrap">
-      <img id="preview-img" src="" alt="Captura del perfil" style="border-radius:10px;width:80px;height:80px;object-fit:cover;">
-      <div class="preview-info"><strong>Captura cargada ✓</strong>La IA analizará la bio y la foto</div>
-      <button class="preview-remove" onclick="removeImg()">Cambiar</button>
-    </div>
+<!-- [REQUISITO 4] BOX DE LOGIN / REGISTRO -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-title racing-font">FLIRTAI PADDOCK</div>
+    <div class="auth-subtitle">CONTROL DE INTERACCIONES DE COMPETICIÓN</div>
+    <form id="auth-form" onsubmit="handleAuth(event)">
+      <div class="auth-form-group">
+        <label>Piloto (Correo Electrónico):</label>
+        <input type="email" id="auth-email" required placeholder="tu@escuderia.com">
+      </div>
+      <div class="auth-form-group">
+        <label>Llave de boxes (Contraseña):</label>
+        <input type="password" id="auth-pass" required placeholder="******">
+      </div>
+      <button type="submit" class="gen-btn racing-font">Ingresar al Pit Lane</button>
+    </form>
   </div>
-
-  <div class="card">
-    <div class="card-label"><span>💬</span> Su mensaje (si ya te escribió)</div>
-    <textarea id="their-msg" rows="2" placeholder="Ej: Hola! Vi que también te gusta escalar 🧗 — déjalo vacío si es el primer mensaje"></textarea>
-  </div>
-
-  <div class="card">
-    <div class="card-label"><span>✨</span> Tono</div>
-    <div class="tone-grid">
-      <button class="tone-pill active" onclick="setTone(this,'divertido y con humor')">😄 Divertido</button>
-      <button class="tone-pill" onclick="setTone(this,'misterioso e intrigante')">🌙 Misterioso</button>
-      <button class="tone-pill" onclick="setTone(this,'directo y seguro de sí mismo')">🎯 Directo</button>
-      <button class="tone-pill" onclick="setTone(this,'romántico y dulce')">🌹 Romántico</button>
-      <button class="tone-pill" onclick="setTone(this,'relajado y casual')">😎 Relajado</button>
-      <button class="tone-pill" onclick="setTone(this,'picante y coqueto')">🔥 Coqueto</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-label"><span>🌍</span> Idioma</div>
-    <select id="lang-select">
-      <option value="español">🇪🇸 Español</option>
-      <option value="inglés">🇬🇧 Inglés</option>
-      <option value="catalán">Catalán</option>
-      <option value="francés">🇫🇷 Francés</option>
-      <option value="italiano">🇮🇹 Italiano</option>
-      <option value="portugués">🇵🇹 Portugués</option>
-      <option value="alemán">🇩🇪 Alemán</option>
-    </select>
-  </div>
-
-  <button class="gen-btn" id="gen-btn" onclick="generate()">✨ Generar mensajes</button>
-
-  <div class="results" id="results"></div>
-
-  <footer>FlirtAI — powered by Claude AI</footer>
 </div>
+
+<!-- [REQUISITO 1] HISTORIAL DE CARRERAS LATERAL -->
+<aside>
+  <div>
+    <div class="aside-header">
+      <h1 class="racing-font">HISTORIAL CHATS</h1>
+    </div>
+    <!-- Lista reactiva vinculada al almacenamiento local -->
+    <div class="history-list" id="history-list"></div>
+  </div>
+
+  <!-- [REQUISITO 3] PANEL DE CONSUMO SANITARIO DE API (MÁXIMO 10) -->
+  <div>
+    <div class="warning-box">
+      <div class="warning-title racing-font">LIMIT OIL / COMBUSTIBLE</div>
+      <span class="warning-counter racing-font" id="usage-counter">0 / 10</span>
+      <div class="warning-bar">
+        <div class="warning-progress" id="warning-progress"></div>
+      </div>
+      <p style="font-size: 9px; margin-top: 8px; text-align:center; font-weight: bold;">CADA CONSULTA CONSUME RECURSOS DEL MOTOR. EVITE SOBRECALENTAR LA API.</p>
+    </div>
+    <div style="text-align: center; padding-bottom: 1.5rem;">
+      <span id="user-display" style="font-size: 12px; font-weight: bold; opacity:0.7;"></span>
+      <button class="logout-btn" onclick="logout()" style="margin: 4px auto 0;">Abandono de Carrera</button>
+    </div>
+  </div>
+</aside>
+
+<!-- CUADRO PRINCIPAL DE MANDOS -->
+<main>
+  <header>
+    <div>
+      <div class="logo racing-font">GRAND PRIX AI</div>
+      <p class="tagline">Análisis de Telemetría de Perfiles v90</p>
+    </div>
+    
+    <!-- [REQUISITO 6] DETECTOR AUTOMÁTICO DE TELEMETRÍA DE IDIOMA -->
+    <div class="lang-badge">
+      <span class="racing-font">LANGUAGE:</span>
+      <span class="detected" id="detected-lang-label">ESPAÑOL</span>
+      <button onclick="changeLangManual()">¿Modificar?</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <div class="layout-grid">
+      
+      <!-- [REQUISITO 1] CAMPO DE NOMBRE PARA EL TITULAR DEL HISTORIAL -->
+      <div class="card">
+        <div class="card-label"><span>👤</span> Nombre del Sujeto (Para Archivar Historial)</div>
+        <input type="text" id="chat-name" placeholder="Ej: Gabriela Silva / Carlos Mendoza">
+      </div>
+
+      <!-- CAPTURA DEL PERFIL -->
+      <div class="card">
+        <div class="card-label"><span>📲</span> Captura del Perfil Analizado</div>
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('img-input').click()">
+          <input type="file" id="img-input" accept="image/*" onchange="handleImg(this)">
+          <div class="upload-text">Introduce telemetría: <strong>Sube una captura de pantalla</strong></div>
+        </div>
+        <div class="preview-wrap" id="preview-wrap">
+          <img id="preview-img" src="" alt="Captura">
+          <div>
+            <p style="font-size: 14px; font-weight: bold; margin-bottom: 5px;">Captura Cargada ✓</p>
+            <button class="preview-remove" onclick="removeImg()">Eliminar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SU MENSAJE -->
+      <div class="card">
+        <div class="card-label"><span>💬</span> Mensaje de Entrada en Radio (Opcional)</div>
+        <textarea id="their-msg" rows="2" placeholder="Pega aquí lo que te ha escrito si ya hay conversación en curso..."></textarea>
+      </div>
+
+      <!-- [REQUISITO 2] RECUADRO DE MATICES PRE-GENERACIÓN DE 175-200 CARACTERES -->
+      <div class="card">
+        <div class="card-label">
+          <span>⚙️</span> Inyección de Ajustes Manuales (Matices)
+          <span class="char-counter" id="char-counter">0 / 175</span>
+        </div>
+        <textarea 
+          id="custom-details" 
+          maxlength="175" 
+          rows="2" 
+          placeholder="Ej: Haz la respuesta 1 más agresiva, cambia la 3 para meter un chiste sobre coches..."
+          oninput="updateCharCounter(this)"
+        ></textarea>
+      </div>
+
+      <!-- SELECCIÓN DE TONO -->
+      <div class="card">
+        <div class="card-label"><span>🏎️</span> Setup del Motor (Tono)</div>
+        <div class="tone-grid" style="display:flex; flex-wrap:wrap; gap:8px;">
+          <button class="tone-pill action-btn like-on" style="border-radius:0;" onclick="setTone(this,'divertido y con humor')">😄 Divertido</button>
+          <button class="tone-pill action-btn" style="border-radius:0;" onclick="setTone(this,'misterioso e intrigante')">🌙 Misterioso</button>
+          <button class="tone-pill action-btn" style="border-radius:0;" onclick="setTone(this,'directo y seguro de sí mismo')">🎯 Directo</button>
+          <button class="tone-pill action-btn" style="border-radius:0;" onclick="setTone(this,'romántico y dulce')">🌹 Romántico</button>
+          <button class="tone-pill action-btn" style="border-radius:0;" onclick="setTone(this,'relajado y casual')">😎 Relajado</button>
+          <button class="tone-pill action-btn" style="border-radius:0;" onclick="setTone(this,'picante y coqueto')">🔥 Coqueto</button>
+        </div>
+      </div>
+
+      <button class="gen-btn racing-font" id="gen-btn" onclick="generate()">✨ Arrancar Motor / Generar Mensajes</button>
+
+      <!-- SECCIÓN DE RESULTADOS DINÁMICOS -->
+      <div class="results" id="results"></div>
+
+    </div>
+  </div>
+</main>
 
 <script>
   let tone = 'divertido y con humor';
   let imgBase64 = null;
   let imgType = null;
   let lastCtx = {};
+  
+  // Variables de control de carrera de sesión
+  let currentUser = null;
+  let currentLanguage = 'español';
+  let chatsHistory = [];
+  let activeChatId = null;
+
+  // Comprobación de Paddock al cargar
+  window.onload = function() {
+    const session = localStorage.getItem('flirtai_racing_session');
+    if(session) {
+      currentUser = session;
+      initApp();
+    }
+  };
+
+  function handleAuth(e) {
+    e.preventDefault();
+    const email = document.getElementById('auth-email').value.trim();
+    if(email) {
+      currentUser = email;
+      localStorage.setItem('flirtai_racing_session', email);
+      if(!localStorage.getItem(`usage_racing_${currentUser}`)) {
+        localStorage.setItem(`usage_racing_${currentUser}`, '0');
+      }
+      initApp();
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('flirtai_racing_session');
+    currentUser = null;
+    document.getElementById('auth-screen').style.display = 'flex';
+  }
+
+  function initApp() {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('user-display').textContent = `Piloto: ${currentUser}`;
+    updateUsageUI();
+    loadHistoryFromStorage();
+  }
+
+  // [REQUISITO 3] Límite estricto de consumo a 10
+  function updateUsageUI() {
+    const currentUsage = parseInt(localStorage.getItem(`usage_racing_${currentUser}`) || '0');
+    document.getElementById('usage-counter').textContent = `${currentUsage} / 10`;
+    
+    const percentage = Math.min((currentUsage / 10) * 100, 100);
+    document.getElementById('warning-progress').style.width = `${percentage}%`;
+    
+    if(currentUsage >= 10) {
+      document.getElementById('gen-btn').disabled = true;
+      document.getElementById('gen-btn').textContent = '⚠️ FUEL AGOTADO (10/10)';
+    } else {
+      document.getElementById('gen-btn').disabled = false;
+    }
+  }
+
+  // [REQUISITO 2] Contador dinámico de caracteres
+  function updateCharCounter(textarea) {
+    const current = textarea.value.length;
+    document.getElementById('char-counter').textContent = `${current} / 175`;
+  }
+
+  // [REQUISITO 6] Alterar idioma de forma manual
+  function changeLangManual() {
+    const selected = prompt("Introduce el idioma deseado para las respuestas:");
+    if(selected) {
+      currentLanguage = selected.toLowerCase();
+      document.getElementById('detected-lang-label').textContent = currentLanguage.toUpperCase();
+    }
+  }
 
   function setTone(el, t) {
-    document.querySelectorAll('.tone-pill').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
+    document.querySelectorAll('.tone-pill').forEach(b => {
+      b.classList.remove('like-on');
+    });
+    el.classList.add('like-on');
     tone = t;
   }
 
@@ -555,49 +739,85 @@
     if (data.error) throw new Error('API error: ' + JSON.stringify(data.error));
     if (!data.content) throw new Error('No content: ' + JSON.stringify(data));
     const raw = data.content.map(i => i.text || '').join('');
-    return JSON.parse(raw.replace(/```json|```/g, '').trim());
+    return JSON.parse(raw.replace(/```json|
+```/g, '').trim());
   }
 
+  // GENERACIÓN INTEGRADA Y ADAPTADA
   async function generate() {
-    const theirMsg = document.getElementById('their-msg').value.trim();
-    const lang = document.getElementById('lang-select').value;
-    if (!imgBase64 && !theirMsg) { alert('Sube la captura del perfil o pega su mensaje para continuar.'); return; }
+    const currentUsage = parseInt(localStorage.getItem(`usage_racing_${currentUser}`) || '0');
+    if (currentUsage >= 10) {
+      alert("Combustible agotado. Has llegado al límite de 10 interacciones.");
+      return;
+    }
 
-    lastCtx = { theirMsg, lang, tone };
+    const theirMsg = document.getElementById('their-msg').value.trim();
+    const customDetails = document.getElementById('custom-details').value.trim();
+    let chatName = document.getElementById('chat-name').value.trim();
+    
+    if (!chatName) {
+      chatName = "Piloto Rival Anonimo";
+    }
+
+    if (!imgBase64 && !theirMsg) { 
+      alert('Sube la captura del perfil o ingresa el mensaje de radio.'); 
+      return; 
+    }
+
+    lastCtx = { theirMsg, tone, chatName };
     setLoading(true);
     const isReply = theirMsg.length > 0;
 
-    const prompt = `Eres un experto en conversaciones de apps de citas (Tinder, Bumble).
-${imgBase64 ? 'Analiza la captura de pantalla del perfil: lee el nombre, la bio, los intereses, las fotos y cualquier detalle visible. Usalo todo para personalizar los mensajes.' : ''}
-Genera 3 mensajes en ${lang} con tono ${tone}.
-${isReply ? 'Es una RESPUESTA a su mensaje.' : 'Es el PRIMER mensaje para romper el hielo.'}
-${theirMsg ? 'Su mensaje: "' + theirMsg + '"' : ''}
-Cada mensaje debe sonar natural, humano, nada robotico. Menciona detalles especificos del perfil cuando sea posible.
-Devuelve SOLO JSON sin texto extra:
-{"mensajes":[{"etiqueta":"nombre del estilo","texto":"el mensaje"},{"etiqueta":"nombre del estilo","texto":"el mensaje"},{"etiqueta":"nombre del estilo","texto":"el mensaje"}],"consejo":"consejo corto de 1 frase"}`;
+    // Inyección de parámetros para cumplir Requisito 2 y Requisito 6 en Claude
+    const prompt = `Eres un experto en telemetría de conversaciones en apps de ligar.
+${imgBase64 ? 'Analiza la imagen suministrada: procesa la bio y las capturas de texto e infiere automáticamente el idioma predominante.' : ''}
+Detecta el idioma de forma autónoma basándote en las entradas del chat.
+
+${customDetails ? '⚙️ DIRECTRIZ ESPECÍFICA ADICIONAL: "' + customDetails + '". Debes alterar o modular los mensajes generados basándote estrictamente en este matiz enviado por el usuario.' : ''}
+
+${isReply ? 'Es una RESPUESTA directa.' : 'Es el mensaje de apertura.'}
+${theirMsg ? 'Su mensaje dice: "' + theirMsg + '"' : ''}
+
+Retorna EXCLUSIVAMENTE un objeto JSON estructurado sin explicaciones adicionales:
+{"idioma":"nombre del idioma auto-detectado","mensajes":[{"etiqueta":"estilo racing","texto":"el mensaje"},{"etiqueta":"estilo racing","texto":"el mensaje"},{"etiqueta":"estilo racing","texto":"el mensaje"}],"consejo":"frase corta de estrategia de carrera"}`;
 
     try {
       const data = await callAPI(prompt);
+      
+      if(data.idioma) {
+        currentLanguage = data.idioma.toLowerCase();
+        document.getElementById('detected-lang-label').textContent = currentLanguage.toUpperCase();
+      }
+
+      // Consumo económico del contador de telemetría
+      const newUsage = currentUsage + 1;
+      localStorage.setItem(`usage_racing_${currentUser}`, newUsage.toString());
+      updateUsageUI();
+
+      // Almacenamiento en el historial por nombre
+      saveChatToHistory(chatName, data, theirMsg, isReply);
+
       renderResults(data, isReply, theirMsg);
     } catch(e) {
       document.getElementById('results').style.display = 'block';
-      document.getElementById('results').innerHTML = '<p style="color:#e84343;font-size:13px;text-align:center;padding:1rem">Error: ' + e.message + '</p>';
+      document.getElementById('results').innerHTML = '<p style="color:var(--red-marlboro); font-weight:800; font-size:13px; text-align:center; padding:1rem">ERROR EN BOXES: ' + e.message + '</p>';
     }
     setLoading(false);
   }
 
+  // Refinado con inyección directa de matiz sobre respuesta armada
   async function refine(idx, feedback) {
     if (!feedback) return;
-    const { theirMsg, lang, tone } = lastCtx;
+    const { theirMsg, tone } = lastCtx;
     const original = document.getElementById('mt-' + idx).textContent;
     const btn = document.getElementById('fsend-' + idx);
     btn.disabled = true; btn.textContent = '...';
 
-    const prompt = `Eres experto en apps de citas. Tienes este mensaje: "${original}"
-El usuario pide: "${feedback}"
-Tono: ${tone}, idioma: ${lang}${theirMsg ? ', respondiendo a: "' + theirMsg + '"' : ''}.
+    const prompt = `Eres experto en apps de citas. Tienes este mensaje original: "${original}"
+Ajusta la respuesta aplicando este cambio solicitado por radio: "${feedback}"
+Mantén la coherencia del tono ${tone}.
 Devuelve SOLO JSON:
-{"etiqueta":"estilo","texto":"mensaje mejorado","nota":"que cambiaste en 1 frase corta"}`;
+{"etiqueta":"estilo","texto":"mensaje modificado y refinado","nota":"breve frase sobre qué cambiaste"}`;
 
     try {
       const data = await callAPI(prompt);
@@ -609,10 +829,62 @@ Devuelve SOLO JSON:
         noteEl.style.display = 'block';
       }
       document.getElementById('fi-' + idx).value = '';
-      document.getElementById('fa-' + idx).classList.remove('open');
+      
+      // Sincronizar cambios en el objeto del historial local
+      if(activeChatId !== null) {
+        chatsHistory[activeChatId].data.mensajes[idx].texto = data.texto;
+        chatsHistory[activeChatId].data.mensajes[idx].etiqueta = data.etiqueta;
+        localStorage.setItem(`chats_racing_${currentUser}`, JSON.stringify(chatsHistory));
+      }
     } catch(e) {}
 
-    btn.disabled = false; btn.textContent = 'Enviar';
+    btn.disabled = false; btn.textContent = 'Modificar';
+  }
+
+  // Persistencia de Historial por Nombre
+  function saveChatToHistory(name, data, theirMsg, isReply) {
+    const newChat = {
+      id: Date.now(),
+      name: name,
+      data: data,
+      theirMsg: theirMsg,
+      isReply: isReply,
+      date: new Date().toLocaleDateString()
+    };
+    chatsHistory.unshift(newChat);
+    localStorage.setItem(`chats_racing_${currentUser}`, JSON.stringify(chatsHistory));
+    renderHistoryList();
+    activeChatId = 0;
+  }
+
+  function loadHistoryFromStorage() {
+    const stored = localStorage.getItem(`chats_racing_${currentUser}`);
+    chatsHistory = stored ? JSON.parse(stored) : [];
+    renderHistoryList();
+  }
+
+  function renderHistoryList() {
+    const container = document.getElementById('history-list');
+    container.innerHTML = '';
+    chatsHistory.forEach((chat, idx) => {
+      const btn = document.createElement('button');
+      btn.className = `history-item ${activeChatId === idx ? 'active' : ''}`;
+      btn.onclick = () => loadActiveChat(idx);
+      btn.innerHTML = `
+        <span class="history-name racing-font">${escHtml(chat.name)}</span>
+        <span class="history-meta">Vuelta de chat: ${chat.date}</span>
+      `;
+      container.appendChild(btn);
+    });
+  }
+
+  function loadActiveChat(idx) {
+    activeChatId = idx;
+    renderHistoryList();
+    const chat = chatsHistory[idx];
+    document.getElementById('chat-name').value = chat.name;
+    document.getElementById('their-msg').value = chat.theirMsg;
+    renderResults(chat.data, chat.isReply, chat.theirMsg);
   }
 
   function renderResults(data, isReply, theirMsg) {
@@ -621,42 +893,41 @@ Devuelve SOLO JSON:
     let html = '';
 
     if (isReply && theirMsg) {
-      html += `<div class="section-label">Su mensaje</div>
+      html += `<div class="section-label">Mensaje en Radio Abierta</div>
         <div class="their-bubble">${escHtml(theirMsg)}</div>`;
     }
 
-    html += `<div class="section-label">${isReply ? 'Tus respuestas' : 'Mensajes para romper el hielo'}</div>`;
+    html += `<div class="section-label">${isReply ? 'Opciones de Adelantamiento (Respuestas)' : 'Mensajes Pole Position'}</div>`;
 
     data.mensajes.forEach((m, i) => {
       html += `
       <div class="msg-card" id="mc-${i}">
         <div class="msg-style" id="ms-${i}">${escHtml(m.etiqueta)}</div>
         <div class="msg-text" id="mt-${i}">${escHtml(m.texto)}</div>
-        <div class="change-note" id="mnote-${i}"></div>
+        <div class="change-note" id="mnote-${i}" style="color:var(--blue-camel); font-size:12px; margin-top:4px; font-weight:bold;"></div>
         <div class="msg-actions">
-          <button class="action-btn" id="lb-${i}" onclick="toggleLike(${i})">👍 Me gusta</button>
-          <button class="action-btn" id="db-${i}" onclick="toggleDis(${i})">👎 No me gusta</button>
-          <button class="action-btn" onclick="toggleFeedback(${i})">✏️ Cambiar algo</button>
+          <button class="action-btn" id="lb-${i}" onclick="toggleLike(${i})">👍 Gas</button>
+          <button class="action-btn" id="db-${i}" onclick="toggleDis(${i})">👎 Box</button>
+          <button class="action-btn" onclick="toggleFeedback(${i})">✏️ Ajuste Fino</button>
           <button class="action-btn" id="cb-${i}" onclick="copyMsg(${i})">📋 Copiar</button>
         </div>
-        <div class="feedback-area" id="fa-${i}">
-          <div class="feedback-hint">¿Qué quieres que cambie? Sé específico:</div>
-          <div class="feedback-row">
+        <div class="feedback-area" id="fa-${i}" style="display:none; margin-top:10px;">
+          <div class="feedback-row" style="display:flex; gap:6px;">
             <input class="feedback-input" id="fi-${i}" type="text"
-              placeholder="Ej: hazlo más corto, añade humor, menciona el surf..."
+              placeholder="Ej: Hazlo un poco más corto..."
               onkeydown="if(event.key==='Enter')document.getElementById('fsend-${i}').click()">
-            <button class="feedback-send" id="fsend-${i}"
-              onclick="refine(${i}, document.getElementById('fi-${i}').value.trim())">Enviar</button>
+            <button class="action-btn" style="background:var(--text-dark); color:white;" id="fsend-${i}"
+              onclick="refine(${i}, document.getElementById('fi-${i}').value.trim())">Modificar</button>
           </div>
         </div>
       </div>`;
     });
 
     if (data.consejo) {
-      html += `<div class="tip-card">${escHtml(data.consejo)}</div>`;
+      html += `<div class="tip-card"><span class="racing-font" style="color:var(--red-marlboro)">Estrategia de boxes:</span> ${escHtml(data.consejo)}</div>`;
     }
 
-    html += `<button class="regen-btn" onclick="generate()">↻ Generar nuevos mensajes</button>`;
+    html += `<button class="regen-btn" onclick="generate()">↻ Solicitar Nueva Vuelta de Respuestas</button>`;
     wrap.innerHTML = html;
   }
 
@@ -684,8 +955,8 @@ Devuelve SOLO JSON:
 
   function toggleFeedback(i) {
     const fa = document.getElementById('fa-' + i);
-    fa.classList.toggle('open');
-    if (fa.classList.contains('open')) document.getElementById('fi-' + i).focus();
+    fa.style.display = (fa.style.display === 'block') ? 'none' : 'block';
+    if (fa.style.display === 'block') document.getElementById('fi-' + i).focus();
   }
 
   function copyMsg(i) {
@@ -701,7 +972,7 @@ Devuelve SOLO JSON:
   function setLoading(on) {
     const btn = document.getElementById('gen-btn');
     btn.disabled = on;
-    btn.innerHTML = on ? '<span class="spinner"></span> Generando...' : '✨ Generar mensajes';
+    btn.innerHTML = on ? '<span class="spinner"></span> Procesando Telemetría...' : '✨ Arrancar Motor / Generar Mensajes';
     if (!on) return;
     document.getElementById('results').style.display = 'none';
   }
