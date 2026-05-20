@@ -3,21 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flirtai.es — Minimalist Interface</title>
+<title>Flirtai.es — Private Owner Interface</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Fuentes de alta tecnología: Inter para la interfaz y Space Mono para métricas/datos -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg-black: #0A0A0A;       /* Negro puro Nothing OS */
-    --panel-dark: #121212;     /* Gris de paneles flotantes */
-    --border-thin: #262626;    /* Líneas de separación industriales de 1px */
+    --bg-black: #0A0A0A;
+    --panel-dark: #121212;
+    --border-thin: #262626;
     --accent-white: #FFFFFF;
-    --accent-gray: #8E8E93;    /* Gris secundario Apple */
-    --accent-red: #FF3B30;     /* Punto de atención / Testigo luminoso */
+    --accent-gray: #8E8E93;
+    --accent-red: #FF3B30;
     --font-sans: 'Inter', sans-serif;
     --font-mono: 'Space Mono', monospace;
   }
@@ -32,7 +31,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* PANTALLA DE ACCESO CON URL OFICIAL (REQUISITO 4) */
+  /* PANTALLA DE ACCESO */
   #auth-screen {
     position: fixed;
     inset: 0;
@@ -77,7 +76,7 @@
     letter-spacing: 1px;
   }
 
-  /* BARRA LATERAL: HISTORIAL (REQUISITO 1 Y 3) */
+  /* BARRA LATERAL: HISTORIAL */
   aside {
     width: 280px;
     background: var(--panel-dark);
@@ -142,7 +141,7 @@
     display: block;
   }
 
-  /* CUADRO MÉTRICAS DE LÍMITE (REQUISITO 3) */
+  /* CUADRO MÉTRICAS DE LÍMITE */
   .limit-box {
     border: 1px solid var(--border-thin);
     padding: 1rem;
@@ -160,10 +159,13 @@
   }
   .limit-counter {
     font-family: var(--font-mono);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: bold;
     display: block;
     margin-bottom: 0.5rem;
+  }
+  .limit-counter.admin-mode {
+    color: #34C759;
   }
   .limit-bar {
     width: 100%;
@@ -177,6 +179,10 @@
     background: var(--accent-white);
     width: 0%;
     transition: width 0.4s ease;
+  }
+  .limit-progress.admin-mode {
+    background: #34C759;
+    width: 100% !important;
   }
 
   /* PANEL CENTRAL */
@@ -212,7 +218,6 @@
     display: inline-block;
   }
 
-  /* INDICADOR DE IDIOMA INDUSTRIAL (REQUISITO 6) */
   .lang-badge {
     font-family: var(--font-mono);
     font-size: 11px;
@@ -236,7 +241,7 @@
     font-size: 11px;
   }
 
-  /* CONFIGURACIÓN DE ÁREA DE TRABAJO */
+  /* ÁREA DE TRABAJO */
   .workspace {
     flex-grow: 1;
     overflow-y: auto;
@@ -281,7 +286,6 @@
     border-color: var(--accent-gray);
   }
 
-  /* CONTADOR RECUADRO DE CONTEXTO (REQUISITO 2) */
   .char-counter {
     float: right;
     font-family: var(--font-mono);
@@ -289,7 +293,6 @@
     color: var(--accent-gray);
   }
 
-  /* INPUT DE ARCHIVOS COMPACTO */
   .upload-zone {
     border: 1px dashed var(--border-thin);
     padding: 1.5rem;
@@ -325,7 +328,6 @@
     border-radius: 4px;
   }
 
-  /* BOTÓN MINIMALISTA ESTILO APPLE */
   .gen-btn {
     width: 100%;
     padding: 14px;
@@ -348,7 +350,7 @@
     cursor: not-allowed;
   }
 
-  /* BLOQUE DE TELEMETRÍA DE RESPUESTAS */
+  /* RESULTADOS */
   .results { margin-top: 1.5rem; display: none; }
   .section-label {
     font-family: var(--font-mono);
@@ -411,23 +413,6 @@
     color: var(--accent-white);
   }
 
-  .regen-btn {
-    width: 100%;
-    margin-top: 1rem;
-    padding: 12px;
-    background: transparent;
-    border: 1px dashed var(--border-thin);
-    color: var(--accent-gray);
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: 11px;
-  }
-  .regen-btn:hover {
-    border-color: var(--accent-gray);
-    color: var(--accent-white);
-  }
-
   .logout-btn {
     background: none;
     border: none;
@@ -442,7 +427,7 @@
 </head>
 <body>
 
-<!-- PANTALLA REGISTRO/LOGIN CON DOMINIO FLIRTAI.ES (REQUISITO 4) -->
+<!-- PANTALLA LOGIN -->
 <div id="auth-screen">
   <div class="auth-box">
     <div class="auth-title">Flirtai<span>.es</span></div>
@@ -460,7 +445,7 @@
   </div>
 </div>
 
-<!-- HISTORIAL E INTERACCIONES (REQUISITO 1 Y 3) -->
+<!-- HISTORIAL E INTERACCIONES -->
 <aside>
   <div>
     <div class="aside-header">
@@ -486,8 +471,6 @@
 <main>
   <header>
     <div class="logo">FLIRTAI.ES — CORE</div>
-    
-    <!-- DETECTOR DE IDIOMA (REQUISITO 6) -->
     <div class="lang-badge">
       LOCALE: <span id="detected-lang-label">ESPAÑOL</span>
       <button onclick="changeLangManual()">[OVERRIDE]</button>
@@ -497,13 +480,11 @@
   <div class="workspace">
     <div class="layout-grid">
       
-      <!-- CAMPO NOMBRE PARA TITULAR HISTORIAL (REQUISITO 1) -->
       <div class="card">
         <div class="card-label">Subject Identification</div>
         <input type="text" id="chat-name" placeholder="Enter target identity or chat identifier...">
       </div>
 
-      <!-- CARGA DE CAPTURA -->
       <div class="card">
         <div class="card-label">Profile Telemetry Input</div>
         <div class="upload-zone" id="upload-zone" onclick="document.getElementById('img-input').click()">
@@ -518,13 +499,11 @@
         </div>
       </div>
 
-      <!-- INPUT MENSAJE -->
       <div class="card">
         <div class="card-label">Inbound Data String (Last Message)</div>
         <textarea id="their-msg" rows="2" placeholder="Paste inbound text transcript if thread is active..."></textarea>
       </div>
 
-      <!-- CUADRO DE DETALLES PERSONALIZADOS 150-200 CHARS (REQUISITO 2) -->
       <div class="card">
         <div class="card-label">
           Fine-Tuning Parameter Modifiers
@@ -534,7 +513,7 @@
           id="custom-details" 
           maxlength="175" 
           rows="2" 
-          placeholder="Inject manual context constraints (e.g., make variation 2 more indirect, suggest coffee date)..."
+          placeholder="Inject manual context constraints..."
           oninput="updateCharCounter(this)"
         ></textarea>
       </div>
@@ -552,6 +531,10 @@
   let currentUser = null; let currentLanguage = 'español';
   let chatsHistory = []; let activeChatId = null;
 
+  // CREDENCIALES PRIVADAS EXCLUSIVAS PARA TI
+  const ADMIN_EMAIL = "arniflores@flirtai.es";
+  const ADMIN_PASSWORD = "TuContraseñaSeguraAquí"; // <--- Cambia esto para tu seguridad
+
   window.onload = function() {
     const session = localStorage.getItem('fl_session_min');
     if(session) { currentUser = session; initApp(); }
@@ -559,7 +542,15 @@
 
   function handleAuth(e) {
     e.preventDefault();
-    const email = document.getElementById('auth-email').value.trim();
+    const email = document.getElementById('auth-email').value.trim().toLowerCase();
+    const pass = document.getElementById('auth-pass').value;
+
+    // Si alguien intenta usar tu correo de admin, obligatoriamente debe coincidir la contraseña privada
+    if (email === ADMIN_EMAIL && pass !== ADMIN_PASSWORD) {
+      alert("Acceso denegado: Firma criptográfica inválida para el propietario.");
+      return;
+    }
+
     if(email) {
       currentUser = email;
       localStorage.setItem('fl_session_min', email);
@@ -582,12 +573,34 @@
   }
 
   function updateUsageUI() {
+    const counterEl = document.getElementById('usage-counter');
+    const progressEl = document.getElementById('warning-progress');
+    const btnEl = document.getElementById('gen-btn');
+
+    // El modo sin límites solo se activa si tu sesión coincide exactamente
+    if (currentUser === ADMIN_EMAIL) {
+      counterEl.textContent = "UNLIMITED // OWNER";
+      counterEl.classList.add('admin-mode');
+      progressEl.className = "limit-progress admin-mode";
+      btnEl.disabled = false;
+      btnEl.textContent = 'Process Suggestions (Owner Master)';
+      return;
+    }
+
+    counterEl.classList.remove('admin-mode');
+    progressEl.className = "limit-progress";
     const currentUsage = parseInt(localStorage.getItem(`use_min_${currentUser}`) || '0');
-    document.getElementById('usage-counter').textContent = `${currentUsage} / 10`;
+    counterEl.textContent = `${currentUsage} / 10`;
     const percentage = Math.min((currentUsage / 10) * 100, 100);
-    document.getElementById('warning-progress').style.width = `${percentage}%`;
-    document.getElementById('gen-btn').disabled = (currentUsage >= 10);
-    if(currentUsage >= 10) document.getElementById('gen-btn').textContent = 'USAGE LIMIT REACHED';
+    progressEl.style.width = `${percentage}%`;
+    
+    if(currentUsage >= 10) {
+      btnEl.disabled = true;
+      btnEl.textContent = 'USAGE LIMIT REACHED';
+    } else {
+      btnEl.disabled = false;
+      btnEl.textContent = 'Process Suggestions';
+    }
   }
 
   function updateCharCounter(textarea) {
@@ -623,7 +636,8 @@
 
   async function generate() {
     const currentUsage = parseInt(localStorage.getItem(`use_min_${currentUser}`) || '0');
-    if (currentUsage >= 10) return;
+    
+    if (currentUser !== ADMIN_EMAIL && currentUsage >= 10) return;
 
     const theirMsg = document.getElementById('their-msg').value.trim();
     const customDetails = document.getElementById('custom-details').value.trim();
@@ -647,7 +661,9 @@ Retorna ÚNICAMENTE un esquema JSON sin marcas markdown:
       });
       const data = await res.json();
       
-      localStorage.setItem(`use_min_${currentUser}`, (currentUsage + 1).toString());
+      if (currentUser !== ADMIN_EMAIL) {
+        localStorage.setItem(`use_min_${currentUser}`, (currentUsage + 1).toString());
+      }
       updateUsageUI();
       saveChatToHistory(chatName, data, theirMsg);
       renderResults(data, theirMsg);
@@ -659,7 +675,9 @@ Retorna ÚNICAMENTE un esquema JSON sin marcas markdown:
           {etiqueta: "Variante Beta", texto: "Vaya, parece que compartimos el mismo gusto por los lugares poco comunes. ¿Cuál de tus fotos es tu rincón favorito?"}
         ]
       };
-      localStorage.setItem(`use_min_${currentUser}`, (currentUsage + 1).toString());
+      if (currentUser !== ADMIN_EMAIL) {
+        localStorage.setItem(`use_min_${currentUser}`, (currentUsage + 1).toString());
+      }
       updateUsageUI();
       saveChatToHistory(chatName, mockData, theirMsg);
       renderResults(mockData, theirMsg);
@@ -712,7 +730,11 @@ Retorna ÚNICAMENTE un esquema JSON sin marcas markdown:
 
   function setLoading(on) {
     const btn = document.getElementById('gen-btn'); btn.disabled = on;
-    btn.textContent = on ? 'Processing Core...' : 'Process Suggestions';
+    if (on) {
+      btn.textContent = 'Processing Core...';
+    } else {
+      btn.textContent = currentUser === ADMIN_EMAIL ? 'Process Suggestions (Owner Master)' : 'Process Suggestions';
+    }
   }
 
   function escHtml(str) {
